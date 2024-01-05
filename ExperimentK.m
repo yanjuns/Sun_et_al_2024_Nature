@@ -65,7 +65,6 @@ for n = 1:length(datapath)
     load('env_geometry.mat','S')
     load('corner_metrics.mat','pkfr_corners','pkfrsim_corners')
     load('corner_metricsR1.mat','C')
-    load('border_metrics.mat','bcell')
     idx = contains(S, session_name);
     pkfr_corners = pkfr_corners(idx);
     idxbsl = strcmp(S, bsl);
@@ -73,14 +72,7 @@ for n = 1:length(datapath)
     cornercell = cc{end};
     allcell = 1:length(pkfr_corners{1});
     ind = ~ismember(allcell, cornercell);
-    ncc = allcell(ind);
-    bc = bcell(idxbsl);
-    bvc = bc{end};
-%     idxbvc = ~ismember(bc, cornercell);
-%     bvc = bc(idxbvc);
-%     idxcc = ~ismember(cornercell,bc);
-%     cornercell = cornercell(idxcc);
-    
+    ncc = allcell(ind);   
     %corner cell
     pkfrcc_atcorner = cellfun(@(x) x(:,cornercell), pkfr_corners, 'uni', false);
     %corrected using simulated cell
@@ -89,15 +81,11 @@ for n = 1:length(datapath)
     %non-corner cell
     pkfrncc_atcorner = cellfun(@(x) x(:,ncc), pkfr_corners, 'uni', false);
     pkfrnccOval = cellfun(@(x,y) x./y, pkfrncc_atcorner, pkfrsim_atcorner, 'uni', false);
-    %boundary vector cell (2b continued)
-    pkfrbvc_atcorner = cellfun(@(x) x(:,bvc), pkfr_corners, 'uni', false);
-    pkfrbvcOval = cellfun(@(x,y) x./y, pkfrbvc_atcorner, pkfrsim_atcorner, 'uni', false);
-    save('corner_metricsR1.mat','pkfrccOval','pkfrnccOval','pkfrbvcOval','-append')
+    save('corner_metricsR1.mat','pkfrccOval','pkfrnccOval','-append')
 end
 
 pkfrOval.cc = [];
 pkfrOval.ncc = [];
-pkfrOval.bvc = [];
 for n = 1:length(datapath)
     cd(datapath{n})
     load('corner_metricsR1.mat','pkfrccOval','pkfrnccOval','pkfrbvcOval')
@@ -106,22 +94,16 @@ for n = 1:length(datapath)
     
     pkfrncc = cellfun(@(x) mean(x,2), pkfrnccOval, 'uni', 0);
     pkfrOval.ncc = [pkfrOval.ncc, mean(cell2mat(pkfrncc),2)];
-    
-    pkfrbvc = cellfun(@(x) mean(x,2), pkfrbvcOval, 'uni', 0);
-    pkfrOval.bvc = [pkfrOval.bvc, mean(cell2mat(pkfrbvc),2)];
 end
 % Note: the first two corner locations in the oval are high curvatures. 
 pkfrOval.cchicurve = mean(pkfrOval.cc(1:2,:))';
 pkfrOval.cclocurve = mean(pkfrOval.cc(3:4,:))';
 pkfrOval.ncchicurve = mean(pkfrOval.ncc(1:2,:))';
 pkfrOval.ncclocurve = mean(pkfrOval.ncc(3:4,:))';
-pkfrOval.bvchicurve = mean(pkfrOval.bvc(1:2,:))';
-pkfrOval.bvclocurve = mean(pkfrOval.bvc(3:4,:))';
 save('F:\Results_experimentK\pkfrOval_R1.mat','pkfrOval')
 
 [h,p] = signrank(pkfrOval.cchicurve,pkfrOval.cclocurve)
 [h,p] = signrank(pkfrOval.ncchicurve,pkfrOval.ncclocurve)
-[h,p] = signrank(pkfrOval.bvchicurve,pkfrOval.bvclocurve)
 data = [pkfrOval.cchicurve - pkfrOval.cclocurve, pkfrOval.ncchicurve - pkfrOval.ncclocurve];
 figure
 plot(data')

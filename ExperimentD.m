@@ -120,13 +120,6 @@ for k = 1:length(session_name)
 end
 save('F:\Results_experimentD\pkfrcc_atCorner_R1mouse0.4.mat','pkfrcc_atCnc','pkfrcc_atCs','pkfrcc_atC')
 %plot using GraphPad with some rearrangement of the data
-%NOTE for final data filtering:
-%if using 0.3 threshold, if two sessions in the same mouse has a difference
-%greater than 3 fold, then disgrad the session with less number of corner
-%cells. 
-%if using 0.4 threshold, disgard sessions with less than 3 corner cells
-%(final used). the data was manually filtered and final data is in the
-%graphpad prism. 
 
 %% DETERMINE RANDOM LEVEL OF CORNER CELLS (simulated corners or CA1 data)
 %% Using randomly assigned corners

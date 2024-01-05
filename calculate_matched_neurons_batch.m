@@ -1,10 +1,6 @@
-%% Batch processing of Neuron and Behav data
-load('F:\analysis_folders.mat','expK')
-datapath = expK;
-for ii = 1:length(datapath)
-    cd(datapath{ii})
-    split_and_filter_data
-end
+%% load datapath
+load('F:\analysis_folders.mat','expA')
+datapath = expA;
 %% Plot spatial rate maps for a initial examination of cells
 %% Calculate spatial map for plotting purpose
 for ii = 1:length(datapath)

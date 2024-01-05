@@ -525,43 +525,6 @@ xlabel('corner score, CA1')
 ylabel('counts')
 axis square
 
-%% CORNER CELL STABILITY
-%% Determine an appropriate stability by shuffling
-load('F:\analysis_folders.mat','expA')
-datapath = expA;
-%determin corner cells in each session using simulated corner locations
-%map_stb: using interleaved method
-%map_stability: using split to half method
-for n = 1:length(datapath)
-    cd(datapath{n})
-    load('neuronIndividualsf.mat','neuronIndividualsf')
-    load('behavIndividualsf.mat','behavIndividualsf')
-    load('thresh.mat','thresh')
-    map_stb_shuffle = cell(1,length(neuronIndividualsf));
-    parfor ii = 1:length(neuronIndividualsf)
-        neuron = neuronIndividualsf{1,ii};
-        behav = behavIndividualsf{1,ii};
-        Rxy_shuffle = calc_spatialmap_stability_shuffle(neuron,behav,thresh);
-        map_stb_shuffle{1,ii} = Rxy_shuffle; %defined by bit/spike
-    end
-    save('spatial_metrics.mat','map_stb_shuffle','-append')
-end
-session_name = {'hex'}; %expA
-stability_thresh = [];
-for n = 1:length(datapath)
-    cd(datapath{n})
-    load('spatial_metrics.mat','map_stb_shuffle')
-    load('corner_metrics.mat','Cthresh');
-    load('env_geometry.mat','S');
-    idx = ismember(S,session_name);
-    C = Cthresh{3};
-    CC_stability_shuffle = cellfun(@(x,y) x(y,:), map_stb_shuffle(idx), C.cornercell(idx), 'uni', 0);
-    CC_stability_shuffle = mean(cellfun(@(x) nanmean(quantile(x',0.95)), CC_stability_shuffle));
-%     CC_stability_shuffle = mean(cellfun(@(x) nanmean(quantile(x',0.95)), map_stability_shuffle));
-    stability_thresh = [stability_thresh;CC_stability_shuffle];
-end
-% the stability threshold for shuffling from hex for corner cells is 0.4. 
-
 %% DETERMINE RANDOM LEVEL OF CORNER CELLS (simulated corners or CA1 data)
 %% Using randomly assigned corners
 %mannually assign the location of corners for each session
@@ -626,52 +589,6 @@ end
 %% CA1 CA1 CA1
 %% CA1 CA1
 %% Using CA1 data
-load('F:\CA1_mice\analyze_info.mat', 'CA1data')
-datapath_ori = CA1data;
-for n = 1:length(datapath_ori)
-    cd(datapath_ori{n})
-    load('neuronIndividualsf.mat');
-    load('behavIndividualsf.mat');
-    load('thresh.mat','thresh');
-    load('property.mat','mouse');
-    load('sessions.mat','sessions');
-%     if strcmp(mouse, 'M4056')
-%         idx = [5,7,9];
-%     elseif strcmp(mouse, 'M4071')
-%         idx = [4,6,8];
-%     else
-%         idx = [3,5,7];
-%     end
-    if strcmp(mouse, 'M3974F')
-        idx = [6,8,10];
-    else
-        idx = [5,7,9];
-    end
-    neuronIndividualsf = neuronIndividualsf(idx);
-    behavIndividualsf = behavIndividualsf(idx);
-    sessions = sessions(idx);
-    sessions = cellfun(@(x) [mouse,'_',x,'_square'], sessions, 'uni', 0);
-    % correct behav position
-    for ii = 1:length(behavIndividualsf)
-        behav0 = behavIndividualsf{ii};
-        edgecorrect = min(behav0.position);
-        behav0.position = (behav0.position - edgecorrect)*1.25;
-        behavIndividualsf{ii} = behav0;
-    end
-    %change to analysis direction
-    cd('F:\CA1_mice')
-    if ~exist(mouse, 'dir')
-        mkdir(mouse)
-    end
-    cd(['F:\CA1_mice\',mouse])
-    save('neuronIndividualsf.mat','neuronIndividualsf','-v7.3');
-    save('behavIndividualsf.mat','behavIndividualsf','-v7.3');
-    save('thresh.mat','thresh');
-    save('sessions.mat','sessions');
-    %generate ratemap
-    generate_spatial_ratemap([], false)
-end
-
 %generate corner coordinates
 load('F:\CA1_mice\analyze_info.mat','expCA1')
 datapath = expCA1;

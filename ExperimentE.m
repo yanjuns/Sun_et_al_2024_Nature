@@ -33,8 +33,6 @@ end
 
 %% compute the peak fr at the inserted corner across different sessions for corner cells
 %simulate neuron to correct the firing rate
-%note: M4114F was used simulate_ratemap_xsession, as the firing rate
-%difference between icm0 and icm60 was greater than 10%
 for n = 1:length(datapath)
     cd(datapath{n})
     %simulate a ratemap with constant firing
@@ -251,36 +249,4 @@ ylim([0,1.5])
 axis square
 xticklabels({'baseline','0 cm','1.5 cm','3.0 cm','6.0 cm'})
 ylabel('firng rate (Hz)')
-
-%% CONVEX
-%% CONVEX CORNER ANALYSIS
-%% Convex corner anlaysis for icm experiment 
-%% problem: too few neurons were identified
-% load('F:\analysis_folders.mat','expE')
-% datapath = expE;
-% % identify convex corners from icm0
-% for ii = 1:length(datapath)
-%     cd(datapath{ii})
-%     [cvex_coor,cvex_coori] = identify_env_geometry_icmcvx;
-%     save('env_geometry.mat','cvex_coor','cvex_coori','-append')
-% end
-% 
-% %determine corner cells in each session
-% for ii = 1:length(datapath)
-%     cd(datapath{ii})
-%     load('env_geometry.mat','S')
-%     mask = cell(1,length(S));
-%     for jj = 1:length(S)
-%         mask{jj} = true;
-%     end
-%     %determine corner cell for each session by spike shuffling.
-%     %NOTE, for expC, C was using a 0.3/0.35 threshold for identifying
-%     %corner cells. C2 was using a 0.4 threshold for identifying corner
-%     %cells. C2 works slightly better becuase the data in the large
-%     %environment is bit noiser.
-%     CV = identify_corner_cell(mask);
-%     save('corner_metrics.mat','CV','-append')
-% end
-
-
 

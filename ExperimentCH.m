@@ -24,10 +24,6 @@ for ii = 1:length(datapath)
         end
     end
     %determine corner cell for each session by spike shuffling.
-    %NOTE, for expC, C was using a 0.3/0.35 threshold for identifying
-    %corner cells. C2 was using a 0.4 threshold for identifying corner
-    %cells. C2 works slightly better becuase the data in the large
-    %environment is bit noiser. 
     C = identify_corner_cell(mask,[],0.4);
     save('corner_metrics.mat','C','-append')
 end
